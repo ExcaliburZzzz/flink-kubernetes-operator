@@ -20,6 +20,7 @@ package org.apache.flink.kubernetes.operator.utils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.RestOptions;
 import org.apache.flink.kubernetes.operator.api.spec.FlinkDeploymentSpec;
+import org.apache.flink.kubernetes.operator.config.KubernetesOperatorConfigOptions;
 import org.apache.flink.kubernetes.operator.exception.ReconciliationException;
 import org.apache.flink.util.Preconditions;
 
@@ -93,7 +94,7 @@ public class IngressUtils {
             FlinkDeploymentSpec spec,
             Configuration effectiveConfig,
             KubernetesClient client) {
-        if (ingressInNetworkingV1(client)) {
+        if (ingressInNetworkingV1(effectiveConfig)) {
             return new IngressBuilder()
                     .withNewMetadata()
                     .withLabels(spec.getIngress().getLabels())
@@ -282,4 +283,15 @@ public class IngressUtils {
             return serverVersion.compareTo(targetVersion) >= 0;
         }
     }
+
+    public static boolean ingressInNetworkingV1(Configuration config) {
+        // networking.k8s.io/v1/Ingress is available in K8s 1.19
+        // See:
+        // https://kubernetes.io/docs/reference/using-api/deprecation-guide/
+        // https://kubernetes.io/blog/2021/07/14/upcoming-changes-in-kubernetes-1-22/
+        String v1ApiVersion = "networking.k8s.io/v1";
+        String apiVersionConf = config.get(KubernetesOperatorConfigOptions.OPERATOR_INGRESS_API_VERSION);
+        return v1ApiVersion.equals(apiVersionConf);
+    }
+
 }
