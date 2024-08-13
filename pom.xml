@@ -60,7 +60,7 @@ under the License.
         <module>flink-autoscaler-standalone</module>
         <module>flink-autoscaler-plugin-jdbc</module>
         <module>examples/flink-sql-runner-example</module>
-        <module>examples/flink-beam-example</module>
+<!--        <module>examples/flink-beam-example</module>-->
         <module>examples/kubernetes-client-examples</module>
         <module>examples/autoscaling</module>
     </modules>

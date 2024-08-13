@@ -290,8 +290,8 @@ public class IngressUtils {
         // https://kubernetes.io/docs/reference/using-api/deprecation-guide/
         // https://kubernetes.io/blog/2021/07/14/upcoming-changes-in-kubernetes-1-22/
         String v1ApiVersion = "networking.k8s.io/v1";
-        String apiVersionConf = config.get(KubernetesOperatorConfigOptions.OPERATOR_INGRESS_API_VERSION);
+        String apiVersionConf =
+                config.get(KubernetesOperatorConfigOptions.OPERATOR_INGRESS_API_VERSION);
         return v1ApiVersion.equals(apiVersionConf);
     }
-
 }

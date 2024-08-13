@@ -618,6 +618,5 @@ public class KubernetesOperatorConfigOptions {
             operatorConfig("ingress.api-version")
                     .stringType()
                     .defaultValue("networking.k8s.io/v1beta1")
-                    .withDescription(
-                            "apiVersion value of ingress to create.");
+                    .withDescription("apiVersion value of ingress to create.");
 }
