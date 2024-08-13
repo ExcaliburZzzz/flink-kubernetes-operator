@@ -24,6 +24,7 @@ import org.apache.flink.kubernetes.operator.config.KubernetesOperatorConfigOptio
 import org.apache.flink.kubernetes.operator.exception.ReconciliationException;
 import org.apache.flink.util.Preconditions;
 
+import io.fabric8.kubernetes.api.model.APIGroup;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
@@ -61,6 +62,8 @@ public class IngressUtils {
 
     private static final String REST_SVC_NAME_SUFFIX = "-rest";
 
+    public static final String INGRESS_API_VERSION_AUTO = "auto";
+
     private static final Logger LOG = LoggerFactory.getLogger(IngressUtils.class);
 
     public static void updateIngressRules(
@@ -94,7 +97,7 @@ public class IngressUtils {
             FlinkDeploymentSpec spec,
             Configuration effectiveConfig,
             KubernetesClient client) {
-        if (ingressInNetworkingV1(effectiveConfig)) {
+        if (ingressInNetworkingV1(effectiveConfig, client)) {
             return new IngressBuilder()
                     .withNewMetadata()
                     .withLabels(spec.getIngress().getLabels())
@@ -284,7 +287,7 @@ public class IngressUtils {
         }
     }
 
-    public static boolean ingressInNetworkingV1(Configuration config) {
+    public static boolean ingressInNetworkingV1(Configuration config, KubernetesClient client) {
         // networking.k8s.io/v1/Ingress is available in K8s 1.19
         // See:
         // https://kubernetes.io/docs/reference/using-api/deprecation-guide/
@@ -292,6 +295,12 @@ public class IngressUtils {
         String v1ApiVersion = "networking.k8s.io/v1";
         String apiVersionConf =
                 config.get(KubernetesOperatorConfigOptions.OPERATOR_INGRESS_API_VERSION);
+        if (INGRESS_API_VERSION_AUTO.equalsIgnoreCase(apiVersionConf)) {
+            APIGroup apiGroup = client.getApiGroup("networking1.k8s.io");
+            if (null != apiGroup) {
+                apiVersionConf = apiGroup.getPreferredVersion().getGroupVersion();
+            }
+        }
         return v1ApiVersion.equals(apiVersionConf);
     }
 }
