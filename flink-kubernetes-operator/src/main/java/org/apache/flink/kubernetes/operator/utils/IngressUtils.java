@@ -296,7 +296,7 @@ public class IngressUtils {
         String apiVersionConf =
                 config.get(KubernetesOperatorConfigOptions.OPERATOR_INGRESS_API_VERSION);
         if (INGRESS_API_VERSION_AUTO.equalsIgnoreCase(apiVersionConf)) {
-            APIGroup apiGroup = client.getApiGroup("networking1.k8s.io");
+            APIGroup apiGroup = client.getApiGroup("networking.k8s.io");
             if (null != apiGroup) {
                 apiVersionConf = apiGroup.getPreferredVersion().getGroupVersion();
             }
