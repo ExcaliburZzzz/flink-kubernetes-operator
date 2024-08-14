@@ -24,7 +24,6 @@ import org.apache.flink.kubernetes.operator.config.KubernetesOperatorConfigOptio
 import org.apache.flink.kubernetes.operator.exception.ReconciliationException;
 import org.apache.flink.util.Preconditions;
 
-import io.fabric8.kubernetes.api.model.APIGroup;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
@@ -296,10 +295,7 @@ public class IngressUtils {
         String apiVersionConf =
                 config.get(KubernetesOperatorConfigOptions.OPERATOR_INGRESS_API_VERSION);
         if (INGRESS_API_VERSION_AUTO.equalsIgnoreCase(apiVersionConf)) {
-            APIGroup apiGroup = client.getApiGroup("networking.k8s.io");
-            if (null != apiGroup) {
-                apiVersionConf = apiGroup.getPreferredVersion().getGroupVersion();
-            }
+            return ingressInNetworkingV1(client);
         }
         return v1ApiVersion.equals(apiVersionConf);
     }
